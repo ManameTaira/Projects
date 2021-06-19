@@ -1,2 +1,2 @@
-# origamigallery
-This is my first try in a real website, it's more like a photo gallery. I made the html in the Python.
+# OrigamiGallery
+This is an static website created by a Python template. It is like a photo gallery.
