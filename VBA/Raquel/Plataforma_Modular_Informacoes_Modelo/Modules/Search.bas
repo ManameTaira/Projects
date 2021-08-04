@@ -19,7 +19,7 @@ Private Sub ClearTable(ByVal sheet As Object, ByVal tableFirstCell As Range)
     Dim lastRow As Integer
     
     ' If the first column is empty, the entry table should be empty than do not need to clear
-    If tableFirstCell.End(xlDown).Row = 1048576 Then
+    If tableFirstCell.End(xlDown).row = 1048576 Then
         Exit Sub
         
     End If
@@ -46,7 +46,7 @@ Public Sub ClearSearchTable()
     
 End Sub
 
-Private Sub CopyAndPasteTable(ByVal tableName As String, ByVal FirstCell As String, ByVal cellToPaste As Range)
+Private Sub CopyAndPasteTable(ByVal tableName As String, ByVal firstCell As String, ByVal cellToPaste As Range)
 ' Copy the table from the sheet tableName and paste to the cellToPaste
     Dim sheet As Object
     Dim sheetFirstCell As Range
@@ -54,9 +54,9 @@ Private Sub CopyAndPasteTable(ByVal tableName As String, ByVal FirstCell As Stri
     Dim tableLastRow As Integer
     
     Set sheet = Sheets(tableName)
-    Set tableFirstCell = sheet.Range(FirstCell)
+    Set tableFirstCell = sheet.Range(firstCell)
     ' If it go donw and reach the last row then the table is empty
-    If tableFirstCell.End(xlDown).Row = 1048576 Then
+    If tableFirstCell.End(xlDown).row = 1048576 Then
         MsgBox "A tabela para empresa " & table & " esta vazia."
         Exit Sub
         
@@ -104,7 +104,7 @@ Public Sub DisplayCompanyName(ByVal companyName As String)
     ' Get the last column index from the new table
     lastColum = GetTableLastColumnLetter(SheetSearch.Range(SearchFirstCell))
     
-    Set newRange = SheetSearch.Range(companyNameCell, SheetSearch.Range(lastColum & companyNameCell.Row))
+    Set newRange = SheetSearch.Range(companyNameCell, SheetSearch.Range(lastColum & companyNameCell.row))
     
     ' Merge the new range of cell
     newRange.Merge
@@ -177,7 +177,7 @@ Public Sub UpdateTable()
     ' Clear the original table
     ClearTable sheet, sheet.Range(CompanyFirstCell)
     ' Copy the table from search sheet and paste it to the original sheet
-    CopyAndPasteTable SheetSearch.Name, SearchFirstCell, sheet.Range(CompanyFirstCell)
+    CopyAndPasteTable SheetSearch.name, SearchFirstCell, sheet.Range(CompanyFirstCell)
     
     MsgBox "Tabela (" & companyName & ") atualizada com sucesso!"
     

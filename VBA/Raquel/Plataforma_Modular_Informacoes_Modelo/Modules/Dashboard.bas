@@ -5,14 +5,20 @@ Public FirstCellRedStatus As Range
 Public FirstCellBlueStatus As Range
 Public FirstCellYelowStatus As Range
 Public ArrDashboardHeader() As Variant
-Public ArrDefaultSheetHeader() As Variant
+Public DefaultSheetHeader As Object
 Public ArrDefaultSheetWidthColumns() As Variant
-Public Const DefaultSheetHeaderHeight As Integer = 31.5
+Public Const DefaultSheetHeaderHeight As Integer = 45
 Public Const TitleSheetFirstCol As String = "A1"
 Public Const HeaderSheetFirstCol As String = "A3"
 Public TitleFontFormat As Object
 Public HeaderFontFormat As Object
 Public BodyFontFormat As Object
+Public Const maxRow As Integer = 100
+
+Public Const RedWarning As String = "ATENÇÃO!"
+Public Const GreenWarning As String = "Completo"
+Public Const YellowWarning As String = "Dentro do Prazo"
+Public Const BlueWarning As String = "Prazo não definido"
 
 Public Sub InitDashboard()
 ' Initialize the Dashboard variables
@@ -24,7 +30,7 @@ Public Sub InitDashboard()
     Set TitleFontFormat = CreateObject("Scripting.Dictionary")
     Set HeaderFontFormat = CreateObject("Scripting.Dictionary")
     Set BodyFontFormat = CreateObject("Scripting.Dictionary")
-    
+    Set DefaultSheetHeader = CreateObject("Scripting.Dictionary")
     ' Set the Font format
     TitleFontFormat.Add "FontName", "Calibri Light"
     TitleFontFormat.Add "FontSize", 20
@@ -44,10 +50,19 @@ Public Sub InitDashboard()
     ArrDashboardHeader = Array("Sheet", "Status", "Prazo Legal", "Documentos")
     
     ' The default header when a sheet is created
-    ArrDefaultSheetHeader = Array("País", "Status", "Caso", "nº do pedido", "Protocolo de Depósito", "Invoice", "Prazo Legal", _
-                                  "Documentos", "Doc. Assinados cliente", "Enviados Correspondente")
-    ' The default width for each column, the array ubound should be the same as the arrDefaultSheetHeader ubound
-    ArrDefaultSheetWidthColumns = Array(11.22, 12.67, 25.44, 10.44, 9.78, 8.44, 9.89, 19.89, 7.11, 11.12)
+    DefaultSheetHeader.Add "País", 0
+    DefaultSheetHeader.Add "Status", 1
+    DefaultSheetHeader.Add "Caso", 2
+    DefaultSheetHeader.Add "nº do pedido", 3
+    DefaultSheetHeader.Add "Protocolo de Depósito", 4
+    DefaultSheetHeader.Add "Invoice", 5
+    DefaultSheetHeader.Add "Prazo Legal", 6
+    DefaultSheetHeader.Add "Documentos", 7
+    DefaultSheetHeader.Add "Doc. Assinados cliente", 8
+    DefaultSheetHeader.Add "Enviados Correspondente", 9
+    
+    ' The default width for each column, the array ubound should be the same as the DefaultSheetHeader ubound
+    ArrDefaultSheetWidthColumns = Array(11.3, 14.9, 25.5, 10.5, 9.8, 8.5, 9.9, 19.9, 7.1, 11.1)
     
     ' Before featch the data clear the table
     ClearTables
@@ -87,7 +102,98 @@ Private Sub FormatCell(ByVal cell As Range, Optional ByVal style As String = "")
             .Weight = xlThin
             .LineStyle = xlContinuous
         End With
+    
+    Case "header"
+        With cell
+            .Borders(xlEdgeLeft).LineStyle = xlContinuous
+            .Borders(xlEdgeTop).LineStyle = xlContinuous
+            .Borders(xlEdgeBottom).LineStyle = xlContinuous
+            .Borders(xlEdgeRight).LineStyle = xlContinuous
+            
+            .WrapText = HeaderFontFormat.Item("WrapText")
+            .Font.name = HeaderFontFormat.Item("FontName")
+            .Font.Size = HeaderFontFormat.Item("FontSize")
+            .Font.Bold = HeaderFontFormat.Item("FontBold")
+            
+            .HorizontalAlignment = xlCenter
+            .VerticalAlignment = xlCenter
+            
+        End With
+    
+    Case "title"
+        With cell
+            .Merge
+            .Font.name = TitleFontFormat.Item("FontName")
+            .Font.Size = TitleFontFormat.Item("FontSize")
+            .Font.Bold = TitleFontFormat.Item("FontBold")
+            
+            .HorizontalAlignment = xlCenter
+            .VerticalAlignment = xlCenter
+            
+            .Borders(xlEdgeLeft).LineStyle = xlContinuous
+            .Borders(xlEdgeTop).LineStyle = xlContinuous
+            .Borders(xlEdgeBottom).LineStyle = xlContinuous
+            .Borders(xlEdgeRight).LineStyle = xlContinuous
+    
+        End With
+    
+    Case "status"
+        ' RedWarning rule
+        cell.FormatConditions.Add Type:=xlCellValue, Operator:=xlEqual, Formula1:="=""" & RedWarning & """"
+        cell.FormatConditions(cell.FormatConditions.Count).SetFirstPriority
+        With cell.FormatConditions(1)
+            .Font.Color = RGB(156, 0, 6)
+            .Font.TintAndShade = 0
+            
+            .Interior.PatternColorIndex = xlAutomatic
+            .Interior.Color = RGB(247, 191, 199)
+            .Interior.TintAndShade = 0
+            
+            .StopIfTrue = False
+        End With
+          
+        ' YellowWarning rule
+        cell.FormatConditions.Add Type:=xlCellValue, Operator:=xlEqual, Formula1:="=""" & YellowWarning & """"
+        cell.FormatConditions(cell.FormatConditions.Count).SetFirstPriority
+        With cell.FormatConditions(1)
+            .Font.Color = RGB(156, 87, 0)
+            .Font.TintAndShade = 0
+            
+            .Interior.PatternColorIndex = xlAutomatic
+            .Interior.Color = RGB(255, 235, 156)
+            .Interior.TintAndShade = 0
+            
+            .StopIfTrue = False
+        End With
         
+        ' BlueWarning rule
+        cell.FormatConditions.Add Type:=xlCellValue, Operator:=xlEqual, Formula1:="=""" & BlueWarning & """"
+        cell.FormatConditions(cell.FormatConditions.Count).SetFirstPriority
+        With cell.FormatConditions(1)
+            .Font.Color = RGB(32, 55, 100)
+            .Font.TintAndShade = 0
+            
+            .Interior.PatternColorIndex = xlAutomatic
+            .Interior.Color = RGB(180, 198, 231)
+            .Interior.TintAndShade = 0
+            
+            .StopIfTrue = False
+        End With
+        
+        ' GreenWarning rule
+        cell.FormatConditions.Add Type:=xlCellValue, Operator:=xlEqual, Formula1:="=""" & GreenWarning & """"
+        cell.FormatConditions(cell.FormatConditions.Count).SetFirstPriority
+        With cell.FormatConditions(1)
+            .Font.Color = RGB(0, 97, 0)
+            .Font.TintAndShade = 0
+            
+            .Interior.PatternColorIndex = xlAutomatic
+            .Interior.Color = RGB(198, 239, 206)
+            .Interior.TintAndShade = 0
+            
+            .StopIfTrue = False
+        End With
+
     Case Else
         cell.Interior.Color = RGB(255, 255, 255)
     
@@ -164,7 +270,7 @@ Private Sub CreateStatusTables()
         ' Get the offset of the column to get data based on the first cell
         arrOffset = GetHeaderOffsetColumns(sheetFirstCell)
         
-        sheetLastRow = GetTableLastRow(sheetFirstCell) - sheetFirstCell.Row
+        sheetLastRow = GetTableLastRow(sheetFirstCell) - sheetFirstCell.row
         
         ' If the table is empty
         If sheetLastRow <= 0 Then GoTo skipCompany
@@ -172,7 +278,7 @@ Private Sub CreateStatusTables()
         ' Go through the table to get the data
         For Each status In sheet.Range(sheetFirstCell, sheetFirstCell.offset(sheetLastRow, 0))
             ' if the status value match the value get the cell value and add to the sheet dashboard
-            If status.Value = "ATENÇÃO!" Then
+            If status.Value = RedWarning Then
                 FirstCellRedStatus.offset(offsetRedAlert, 0) = company
                 FirstCellRedStatus.offset(offsetRedAlert, 1) = status.Value
                 FirstCellRedStatus.offset(offsetRedAlert, 2) = status.offset(0, arrOffset(0)).Value
@@ -180,7 +286,7 @@ Private Sub CreateStatusTables()
                                 
                 offsetRedAlert = offsetRedAlert + 1
                 
-            ElseIf status.Value = "Prazo não definido" Then
+            ElseIf status.Value = BlueWarning Then
                 FirstCellBlueStatus.offset(offsetBlueAlert, 0) = company
                 FirstCellBlueStatus.offset(offsetBlueAlert, 1) = status
                 FirstCellBlueStatus.offset(offsetBlueAlert, 2) = status.offset(0, arrOffset(0)).Value
@@ -188,7 +294,7 @@ Private Sub CreateStatusTables()
                 
                 offsetBlueAlert = offsetBlueAlert + 1
             
-            ElseIf status.Value = "Dentro do Prazo" Then
+            ElseIf status.Value = YellowWarning Then
                 FirstCellYelowStatus.offset(offsetYellowAlert, 0) = company
                 FirstCellYelowStatus.offset(offsetYellowAlert, 1) = status
                 FirstCellYelowStatus.offset(offsetYellowAlert, 2) = status.offset(0, arrOffset(0)).Value
@@ -210,15 +316,15 @@ End Sub
 Private Sub ClearTables()
     ' For each status table (red, blue and yellow) cleat the contents
     SheetDashBoard.Range(FirstCellRedStatus.offset(1, 0), _
-                         FirstCellRedStatus.offset(GetTableLastRow(FirstCellRedStatus) - FirstCellRedStatus.Row, _
+                         FirstCellRedStatus.offset(GetTableLastRow(FirstCellRedStatus) - FirstCellRedStatus.row, _
                                                    UBound(ArrDashboardHeader))).ClearContents
                                                    
     SheetDashBoard.Range(FirstCellBlueStatus.offset(1, 0), _
-                         FirstCellBlueStatus.offset(GetTableLastRow(FirstCellBlueStatus) - FirstCellBlueStatus.Row, _
+                         FirstCellBlueStatus.offset(GetTableLastRow(FirstCellBlueStatus) - FirstCellBlueStatus.row, _
                                                       UBound(ArrDashboardHeader))).ClearContents
                                                       
     SheetDashBoard.Range(FirstCellYelowStatus.offset(1, 0), _
-                         FirstCellYelowStatus.offset(GetTableLastRow(FirstCellYelowStatus) - FirstCellYelowStatus.Row, _
+                         FirstCellYelowStatus.offset(GetTableLastRow(FirstCellYelowStatus) - FirstCellYelowStatus.row, _
                                                      UBound(ArrDashboardHeader))).ClearContents
 
 
@@ -279,74 +385,77 @@ End Function
 Private Sub CreateTableTitle(ByVal sheet As Object)
 ' Create the default title, with the default format, in the table when a sheet is created
     Dim defaultTitle As Range
-    ' Get the title range based on the ArrDefaultSheetHeader
-    Set defaultTitle = sheet.Range(sheet.Range(TitleSheetFirstCol), sheet.Range(TitleSheetFirstCol).offset(1, UBound(ArrDefaultSheetHeader)))
     
-    With defaultTitle
-        .Merge
-        .Value = sheet.Name
-        .Font.Name = TitleFontFormat.Item("FontName")
-        .Font.Size = TitleFontFormat.Item("FontSize")
-        .Font.Bold = TitleFontFormat.Item("FontBold")
-        
-        .HorizontalAlignment = xlCenter
-        .VerticalAlignment = xlCenter
-        
-        .Borders(xlEdgeLeft).LineStyle = xlContinuous
-        .Borders(xlEdgeTop).LineStyle = xlContinuous
-        .Borders(xlEdgeBottom).LineStyle = xlContinuous
-        .Borders(xlEdgeRight).LineStyle = xlContinuous
-
-    End With
+    ' Get the title range based on the DefaultSheetHeader
+    Set defaultTitle = sheet.Range(sheet.Range(TitleSheetFirstCol), sheet.Range(TitleSheetFirstCol).offset(1, DefaultSheetHeader.Count - 1)) ' the first index is 0 while the first count is 1, then count -1 should be equal to the index
+    
+    FormatCell defaultTitle, "title"
+    
+    defaultTitle.Value = sheet.name
     
 End Sub
 
 Private Sub CreateSheetDefaultHeader(ByVal sheet As Object)
 ' Create the default header in the new sheet
     Dim index As Integer
-    Dim defaultHeader As Range
-    Dim columnName As Variant
+    Dim firstCell As Range
+    Dim name As Variant
     Dim columnLetter As String
-    ' Get the header range based on the ArrDefaultSheetHeader
-    Set defaultHeader = sheet.Range(sheet.Range(HeaderSheetFirstCol), sheet.Range(HeaderSheetFirstCol).offset(0, UBound(ArrDefaultSheetHeader)))
+    Dim cell As Range
+        
+    Set firstCell = sheet.Range(HeaderSheetFirstCol)
     
-    index = 0
-    For Each columnName In defaultHeader
-        ' Set the column name and add the boardes
-        With columnName
-            .Value = ArrDefaultSheetHeader(index)
-            .Borders(xlEdgeLeft).LineStyle = xlContinuous
-            .Borders(xlEdgeTop).LineStyle = xlContinuous
-            .Borders(xlEdgeBottom).LineStyle = xlContinuous
-            .Borders(xlEdgeRight).LineStyle = xlContinuous
-            
-        End With
+    For Each name In DefaultSheetHeader.keys
+        Set cell = firstCell.offset(0, DefaultSheetHeader(name))
+        cell.Value = name
+        
+        FormatCell cell, "header"
+        
         ' Set the width
-        columnLetter = Split(columnName.Cells.Address, "$")(1)
-        Columns(columnLetter & ":" & columnLetter).ColumnWidth = ArrDefaultSheetWidthColumns(index)
+        columnLetter = Split(cell.Cells.Address, "$")(1)
+        Columns(columnLetter & ":" & columnLetter).ColumnWidth = ArrDefaultSheetWidthColumns(DefaultSheetHeader(name))
         
-        index = index + 1
-        
-    Next columnName
-    
-    ' Add the format for the header
-    With defaultHeader
-        .WrapText = HeaderFontFormat.Item("WrapText")
-        .Font.Name = HeaderFontFormat.Item("FontName")
-        .Font.Size = HeaderFontFormat.Item("FontSize")
-        .Font.Bold = HeaderFontFormat.Item("FontBold")
-        
-        .HorizontalAlignment = xlCenter
-        .VerticalAlignment = xlCenter
-                        
-    End With
+    Next name
     
     ' Set the header row height
-    Rows(defaultHeader.Row & ":" & defaultHeader.Row).RowHeight = DefaultSheetHeaderHeight
+    Rows(firstCell.row & ":" & firstCell.row).RowHeight = DefaultSheetHeaderHeight
     
 End Sub
 
-Public Sub FormatTableBody(ByVal sheet As Object)
+Public Sub CreateTableBody(ByVal sheet As Object)
+    Dim tableBody As Range
+    Dim firstStatusRow As Range
+    Dim statusCell  As Variant
+    Dim row As Integer
+    Dim documentCell As Range
+    Dim documentWasSentCell As Range
+    Dim deadlineCell As Range
+    Dim firstCell As Range
+    
+    Set firstCell = sheet.Range(HeaderSheetFirstCol)
+    
+    ' get the cells under the header, the same number of columns of the header, and go down
+    Set tableBody = sheet.Range(sheet.Range(firstCell.offset(1, 0), firstCell.offset(1, DefaultSheetHeader.Count)), _
+                                sheet.Range(firstCell.offset(1, 0), firstCell.offset(maxRow, DefaultSheetHeader.Count)))
+    
+    FormatCell tableBody
+    
+    For row = 1 To maxRow
+        Set statusCell = firstCell.offset(row, DefaultSheetHeader("Status"))
+        Set documentCell = statusCell.offset(0, DefaultSheetHeader("Documentos") - DefaultSheetHeader("Status"))
+        Set documentWasSentCell = statusCell.offset(0, DefaultSheetHeader("Enviados Correspondente") - DefaultSheetHeader("Status"))
+        Set deadlineCell = statusCell.offset(0, DefaultSheetHeader("Prazo Legal") - DefaultSheetHeader("Status"))
+        
+        statusCell.Formula = "=IF(ISBLANK(" & documentCell.Address & "), """"," & _
+                                  "IF(" & documentWasSentCell.Address & "=""ok"",""" & GreenWarning & """," & _
+                                      "IF(OR(ISBLANK(" & deadlineCell.Address & ")," & deadlineCell.Address & "=""-""), """ & BlueWarning & """," & _
+                                          "IF(NETWORKDAYS(TODAY," & deadlineCell.Address & ")<=8,""" & RedWarning & """,""" & YellowWarning & """))))"
+    Next row
+    
+    columnLetter = Split(firstCell.offset(0, DefaultSheetHeader("Status")).Address, "$")(1)
+    Set statusColumn = Columns(columnLetter & ":" & columnLetter)
+    
+    FormatCell statusColumn, "status"
     
     
 End Sub
@@ -369,8 +478,8 @@ Public Sub CreatSheet()
     Sheets.Add Before:=SheetSearch
     ' Search the new sheet in the sheets to rename it
     For i = 1 To Sheets.Count:
-        If Companies.exists(Sheets(i).Name) = False And Sheets(i).Name <> "Search" And Sheets(i).Name <> "Dashboard" Then
-            Sheets(i).Name = sheetName
+        If Companies.exists(Sheets(i).name) = False And Sheets(i).name <> "Search" And Sheets(i).name <> "Dashboard" Then
+            Sheets(i).name = sheetName
             Exit For
             
         End If
@@ -381,7 +490,8 @@ Public Sub CreatSheet()
     ' Set the default header and title
     CreateTableTitle sheet
     CreateSheetDefaultHeader sheet
-    FormatTableBody
+    CreateTableBody sheet
+    
     ' Update the Company dict
     UpdateCompaniesName
     
