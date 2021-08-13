@@ -1,158 +1,160 @@
-body{
-	background: url('../../imagens/background.svg');
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat&display=swap');
+html{
+    background: url('../../images/background.svg');
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-size: cover;
 	background-position: center;
 }
-.header{
-	font-size: 50px;
-	font-family: 'Indie Flower', cursive;
-	padding: 10px 20px;
+body{
+    padding: 0 20px 0 20px;
+    justify-content:center;
+    width: 70%;
+    background-color: #fef6d1;
+    margin-top: 20px;
+    margin: auto;
+    padding-top: 20px;
 }
-.text-info{
-	color: black;
-	font-size: 22px;
-	padding: 20px;
-	margin-top: 5px;
-	margin-bottom: 0;
-	font-family: 'Indie Flower', cursive;
+
+a{
+    text-decoration: none;
+}
+
+a.menu{
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-family: 'Montserrat';
+    font-weight: bolder;
+}
+
+a.menu:hover {
+    background: #ddd;
+    color: black;
+}
+
+h1{
+    padding-top: 50px;
+    font-size: 50px;
+	font-family: 'Great Vibes', cursive;
+    font-weight: lighter;
+}
+
+img.pin{
+    margin: 0;
+    width: 30px;
+    height: 30px;
+    display: inline;
+    padding-right: 10px;
+}
+
+a.anchor{
+    color: black;
+}
+
+nav{
+    display: block;
+    overflow: hidden;
+    background-color: #333;
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+    left: 0;
+    width: 100%; /* Full width */
 
 }
 
-.post-it{
-	background-color: #ffc;
-	background: #ffff88; /* Old browsers */
-	background: -moz-linear-gradient(-45deg, #ffff88 81%, #ffff88 82%, #ffff88 82%, #ffffc6 100%); /* FF3.6+ */
-	background: -webkit-linear-gradient(-45deg, #ffff88 81%,#ffff88 82%,#ffff88 82%,#ffffc6 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(-45deg, #ffff88 81%,#ffff88 82%,#ffff88 82%,#ffffc6 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(-45deg, #ffff88 81%,#ffff88 82%,#ffff88 82%,#ffffc6 100%); /* IE10+ */
-	background: linear-gradient(135deg, #ffff88 81%,#ffff88 82%,#ffff88 82%,#ffffc6 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffff88', endColorstr='#ffffc6',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-	-webkit-transform:rotate(-6deg);
-  -o-transform:rotate(-6deg);
-  -moz-transform:rotate(-6deg);
-	margin: 10px;
-	margin-left: 60px;
-	border:1px solid #E8E8E8;
-	border-bottom-right-radius: 60px 5px;
 
-	width: 600px;
-	height: auto;
+section.columns{
+    -webkit-columns: 2 200px;
+    -moz-columns: 2 200px;
+    columns: 2 200px;
 }
 
-.instagram{
-	position: relative;
-	text-align: right;
-	margin-right: 8%;
-	width: fit-content;
-	margin-left: auto;
-	text-align: center;
-	z-index: 0;
-}
-.instagram::before{
-	content: 'Mana Tai';
-	display: block;
-	font-family: 'Indie Flower', cursive;
-	font-size: 20pt;
+p.about{
+    text-align: justify;
 }
 
-#instagram-icon{
-	width: 5em;
-	margin: 5px;
+p.about::first-letter{
+    font-size: xxx-large;
+    font-weight: lighter;
+    font-style: italic;
 }
 
-.label{
-	color: black;
-	font-size: 18px;
-	padding: 0;
-	margin-top: 5px;
-	font-family: 'Indie Flower', cursive;
+div.instagram{
+    width: 100%;
+    margin-right: 10px;
+    text-align: right
+}
+p.instagram{
+    text-align: right;
+    text-decoration: none;
 }
 
-img.photo{
-	width: 100%;
+img#instagram{
+    margin: 0 20px 0 0;
+    width: 50px;
+    float: right;
 }
 
-div.photo_frame{
-	margin: 5px;
-	padding-left: 	2%;
-	padding-right: 	2%;
-	padding-top: 	4%;
-	padding-bottom: 2%;
-	display: inline-block;
-	width: inherit;
-	height: inherit;
-	background-color: white;
-	width: 30%;
+img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 5%;
+    width: 95%;
 }
 
-div.sticker{
-	width: 10%;
-	display: flex;
-	position: relative;
-	top: 40px;
-	z-index: 1;
+.frame{
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 50px;
+    border-style: solid;
+    border-width: thin;
+    border-color: #4a4c4c;
+    background-color: white;
 }
 
-.position{
-	display: inline-block;
+h2{
+    margin: 10px;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    font-weight: bolder;
 }
-.en{
-	display: block;
-}
-
-.pt{
-	display: none;
-}
-section.content_gallery{
-	height: auto;
-    /* -webkit-columns: 2 300px;
-    -moz-columns: 2 300px;
-    columns: 2 300px;
-    column-gap: 1%; */
-	padding-top: 	80px;
+p{
+    margin: 10px;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    font-weight: bolder;
 }
 
-p.img_date{
-	padding: 3px;
-	font-style: italic;
-	margin-top: 0px;
-	font-family: 'Indie Flower', cursive;
-	font-size: 30px;
+.date{
+    margin: 10px;
+    text-align: center;
+    font-family: 'Great Vibes', cursive;
+    font-weight: bolder;
 }
 
-p.img_tag{
-	display: none;
-	padding-top: 5px;
-	padding-left: 3px;
-	margin-top: 0px;
-	margin-bottom: 0px;
+
+.image{
+    margin: 10px;
 }
+
 
 @media only screen and (max-width:620px) {
-  /* For mobile phones: */
-	section.content_gallery{
-		-webkit-columns: 2 100px;
-		-moz-columns: 	  2 100px;
-		columns: 		  2 100px;
-	}
-	.post-it{
-		  -webkit-column-span: all;
-          column-span: all;
-	}
-	img.Gallery_img{
-		max-height: 90vh;
-		max-width: 90vW
-	}
-	div.GalleryFrame{
-		height: auto;
-		padding-left: 	1vw;
-		padding-right: 	1vw;
-		padding-bottom: 1vw;
-	}
-	div.language{
-		display:inline-flex;
-		float: left;
-	}
-}
+    /* For mobile phones: */
+    body{
+        width: 100%;
+    }
+    section{
+        columns: 1;
+    }
+
+    a.menu{
+        padding: 12px 10px;
+    }
+  }

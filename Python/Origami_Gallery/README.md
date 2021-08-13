@@ -1,2 +1,5 @@
-# OrigamiGallery
-This is an static website created by a Python template. It is like a photo gallery.
+# Origami Gallery
+This is a python code that generates the html to my [origami gallery](https://manametaira.github.io/OrigamiGallery/)
+
+## Requirements
+[Yattag](www.yattag.org)
