@@ -24,7 +24,7 @@ def create_head(doc, tag, text):
         with tag('title'):
             text('Gallery')                                                                                                                             # the page title
 
-        for href in sources.values:
+        for href in sources.values():
             doc.stag('link', rel='stylesheet', href=href)
 
 
@@ -124,7 +124,7 @@ def create_photoframe(doc, tag, text, photo_path, filename):
 
     with tag('div', klass='frame'):
         with tag('div', klass='image'):
-            doc.stag('img', src = f'{photo_path}/{filename}', klass = 'photo')
+            doc.stag('img', src = f'{photo_path}\{filename}', klass = 'photo')
         with tag('h2'):
             text(name)
         with tag('h2', klass='date'):
@@ -156,7 +156,7 @@ with tag('html'):
                     continue
 
                 with tag('section', klass='columns'):
-                    path_photo = f'{path_photos}\{title}'                                                                                               # add the current section to the path
+                    path_photo = f'{path_photos}\{title.lower()}'                                                                                               # add the current section to the path
                     for filename in os.listdir(path_photo):
                         create_photoframe(doc, tag, text, path_photo, filename)
 
