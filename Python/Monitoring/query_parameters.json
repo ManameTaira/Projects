@@ -1,0 +1,27 @@
+/**
+	Instructions:
+		file name parameters
+			region: the region key will be placed in the .docx file name as Monitoramento DIs (region) - Month.YYYY.docx
+		
+		url parameters
+			The parameters in the follow keys can be found in the search url, like "https://www.tmdn.org/tmdsview-web/#/dsview/results?key_1=value_1&key_2=value_2"
+			The keys for the fields page, pageSize, criteria, newPage and fields is alread set in the python script, then there is no need to set it again.
+			
+			"start_date" and "end_date" values will be replaced in the python code to the first day of last month and last day of last month respectively.
+		
+**/
+[
+    {
+		"fileName": "EUIPO",
+        "offices": ["EM"],
+        "territories": ["AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE"],
+        "locarnoClass": ["02.04"],
+        "publicationFrom": "start_date",
+        "publicationTo": "end_date",
+		"page": "1",
+		"pageSize": "200",
+		"criteria": "W",
+		"newPage": true,
+		"fields": ["ST13","applicantName", "designNumber","publicationDate","registrationDate","indicationOfProduct", "indicationOfProductLanguage","preferredImageUrl","imageUrls"]
+    }
+]
