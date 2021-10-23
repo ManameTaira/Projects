@@ -23,20 +23,24 @@ def calcula_valor_entrega(valor_entrega, comissao_loja, fixo_motoboy):
     return valor_entrega * comissao_loja + fixo_motoboy
 
 
-def seleciona_motoboy(motoboy_pedidos, motoboys):
-    selecionado = list()
+def seleciona_motoboy(motoboy_pedidos, motoboys, max_pedido_por_moto=None):
+    selecionado = ''
+    min_qtd = 0
 
     for moto in motoboys:
         if not motoboy_pedidos.get(moto):
             return moto
 
-        if not selecionado or motoboy_pedidos.get(moto, 0) < selecionado[1]:
-            selecionado = [moto, motoboy_pedidos[moto]]
+        if not selecionado or motoboy_pedidos.get(moto, 0) < min_qtd:
+            if max_pedido_por_moto is None:
+                selecionado =  moto
+                min_qtd = motoboy_pedidos[moto]
 
-    if not selecionado:
-        selecionado = [motoboys[0]]
+            elif motoboy_pedidos.get(moto, 0) < max_pedido_por_moto:
+                    selecionado =  moto
+                    min_qtd = motoboy_pedidos[moto]
 
-    return selecionado[0]
+    return selecionado
 
 
 def atribui_pedido_a_moto(moto, pedido, entregas, motoboy_pedidos, comissao_loja, fixo_motoboy):
@@ -46,23 +50,33 @@ def atribui_pedido_a_moto(moto, pedido, entregas, motoboy_pedidos, comissao_loja
     motoboy_pedidos[moto] += 1
     entregas[moto].setdefault(pedido[1], []).append([pedido[0], calcula_valor_entrega(pedido[2], comissao_loja, fixo_motoboy)])
 
-def verifica_exclusividade(loja_exclusividade, loja, motoboy_pedidos, min_pedido_por_moto):
-    if (moto := loja_exclusividade.get(loja, False)) and motoboy_pedidos.get(moto, 0) < min_pedido_por_moto:
-        return moto
 
+def verifica_exclusividade(loja_exclusividade, loja, motoboy_pedidos, max_pedido_por_moto):
+    if not (motos := loja_exclusividade.get(loja)):
+        return motos
+
+    return seleciona_motoboy(motoboy_pedidos, motos, max_pedido_por_moto)
+    
 
 def distribui_pedidos(pedidos, dados_loja, dados_motoboy):
-    loja_exclusividade = {dados[1]: moto for moto, dados in dados_motoboy.items() if dados[1] is not None}
-    motoboys = list(dados_motoboy.keys())
+    loja_exclusividade = dict()
+    motoboys = list()
+
+    for moto, dados in dados_motoboy.items():
+        if dados[1] is not None:
+            loja_exclusividade.setdefault(dados[1], []).append(moto)
+
+        else:
+            motoboys.append(moto)
 
     entregas = dict()
     motoboy_pedidos = dict()
-    min_pedido_por_moto = len(pedidos) // len(motoboys) + (1 if len(pedidos) % len(motoboys) else 0)                                                    # adiciona 1 se o resto não for zero pois o motoboy com exclusividade deve ter preferência
+    max_pedido_por_moto_exclusiva = len(pedidos) // len(dados_motoboy.keys()) + (1 if len(pedidos) % len(dados_motoboy.keys()) else 0)                                                    # adiciona 1 se o resto não for zero pois o motoboy com exclusividade deve ter preferência
 
     for pedido in pedidos:
         comissao_loja = dados_loja[pedido[1]]
 
-        if (moto := verifica_exclusividade(loja_exclusividade, pedido[1], motoboy_pedidos, min_pedido_por_moto)):
+        if (moto := verifica_exclusividade(loja_exclusividade, pedido[1], motoboy_pedidos, max_pedido_por_moto_exclusiva)):
             atribui_pedido_a_moto(moto, pedido, entregas, motoboy_pedidos, comissao_loja, dados_motoboy[moto][0])
 
         else:
