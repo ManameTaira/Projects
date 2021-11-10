@@ -1,6 +1,5 @@
 import os
 import requests
-from bs4 import BeautifulSoup
 import datetime
 import json
 import re
@@ -63,8 +62,7 @@ class EUIPN():
         if request_response.url in exceptions:
             return request_response
 
-        result = BeautifulSoup(request_response.text, 'html.parser').text                                                                               # parse the html page to search the message error
-        if 'Please enable JavaScript to view the page content' in result:
+        if 'Please enable JavaScript to view the page content' in request_response.text:
             raise Exception('There are some issues with the amount of requests made to the url.'
                             'If there are any tabs in the browser with the website open, close them and wait for the website to respond correctly.')
 
