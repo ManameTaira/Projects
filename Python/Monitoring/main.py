@@ -18,39 +18,52 @@ def replace_month(paragraphs, month):
     for paragraph in paragraphs:
         paragraph.text = paragraph.text.replace(r'{{Date}}', month)
 
-def write_docx(data, model_file_path, month, file_path):
-    """Fill the .docx model with the data from
+def create_file(file_path, model_file_path, month):
+    """Create the file based in the model, name it and create the table and format it.
 
     Args:
-        data (list): A list of list containing the data to write the .docx file in the order [Figura, Titular, Número, Data Pub., Data Dep., Título].
+        file_path (str): The path and file name to save the file.
         model_file_path (str): The path to the .docx model file.
         month (str): The month name.
-        file_path (str): The path and file name to save the file.
+
+    Returns:
+        docx obj: The docx file object.
     """
-    print(f'Writing .docx file: {file_path}')
+    print(f'Creating .docx file: {file_path}')
     document = docx.Document(model_file_path)                                                                                                           # the model file should have the table header
 
     replace_month(document.paragraphs, month)
     table = document.tables[0]                                                                                                                          # get the table object that already exist in the file and fill with the data
     table.autofit = False
-    for row in data:
-        new_row = table.add_row()
-        new_row.height = Cm(3)
 
-        cells = new_row.cells
+    return document
 
-        for index, value in zip(range(len(row) + 1), row):                                                                                              # get each element in the row
-            if index == 0:
-                cells[index].add_paragraph(value, style='ListNumber')                                                                                   # the first column should be the row index
 
-            elif type(value) == bytes:
-                img_cell = cells[index].paragraphs[0].add_run()
-                img_cell.add_picture(io.BytesIO(value), height=Cm(2.52))                                                                                # the image size
+def write_docx(row, document):
+    """Fill the .docx model with the data from
 
-            else:
-                cells[index].text = value                                                                                                               # if the value is not a byte like then just writes the value
+    Args:
+        data (list): A list of list containing the data to write the .docx file in the order [Figura, Titular, Número, Data Pub., Data Dep., Título].
+        docx obj: The docx file object.
+    """
+    table = document.tables[0]
 
-    document.save(file_path)
+    new_row = table.add_row()
+    new_row.height = Cm(3)
+
+    cells = new_row.cells
+
+    for index, value in zip(range(len(row) + 1), row):                                                                                                  # get each element in the row
+        if index == 0:
+            cells[index].add_paragraph(value, style='ListNumber')                                                                                       # the first column should be the row index
+
+        elif type(value) == bytes:
+            img_cell = cells[index].paragraphs[0].add_run()
+            img_cell.add_picture(io.BytesIO(value), height=Cm(2.52))                                                                                    # the image size
+
+        else:
+            cells[index].text = value                                                                                                                   # if the value is not a byte like then just writes the value
+
 
 def get_month_name(date):
     """Get a date and return the month name of the date.
@@ -79,7 +92,7 @@ def main():
     replaces = {'"start_date"': f'"{start_date}"', '"end_date"': f'"{end_date}"'}
     query_parameters = euipn.get_query_parameters(f'{path}\query_parameters.json', replaces)                                                            # get the query paramethers from the json file and replace the first data and the end date with the value
 
-    file_path = '{path}\\files\Monitoring ({region}) - {month}.{year}.docx'                                                                             # the file name pattern
+    default_file_path = '{path}\\files\Monitoring ({region}) - {month}.{year}.docx'                                                                     # the file name pattern
     model_file_path =f'{path}\Model.docx'                                                                                                               # the file model path, this file has the font style and table style
 
 
@@ -87,9 +100,13 @@ def main():
 
     for query_parameter in query_parameters:
         region = query_parameter.pop('fileName')
-        data = euipn.get_design_data(query_parameter, columns)
+        file_path = default_file_path.format(path=path, region=region, month=month[:3], year=start_date[:4])
+        document = create_file(file_path, model_file_path, month)
 
-        write_docx(data, model_file_path, month, file_path.format(path=path, region=region, month=month[:3], year=start_date[:4]))
+        for row in euipn.get_design_data(query_parameter, columns):
+            write_docx(row, document)
+
+            document.save(file_path)
 
     print('Process finished!')
 

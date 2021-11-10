@@ -225,15 +225,12 @@ class EUIPN():
             data (list): A list of dict containing the data to parse.
             columns (list): A list containing the columns to parse and return, the elements should match the columns returned from the API.
 
-        Returns:
+        Yields:
             list: A list of lists containing the parsed data.
         """
-        parsed_data = []
         print('Parsing data')
         for results in tqdm.tqdm(data, unit='rows'):
-            parsed_data.append([self.monitoring_design_parser[column](results[column]) if results.get(column) else '' for column in columns])           # for each key in the self.data_parser, get the value in the row and parse it. The keys in the self.data_parser
-
-        return parsed_data
+            yield [self.monitoring_design_parser[column](results[column]) if results.get(column) else '' for column in columns]                         # for each key in the self.data_parser, get the value in the row and parse it. The keys in the self.data_parser
 
     def get_design_data(self, query_parameters, columns):
         """Get the data from api given the query_parameters.
