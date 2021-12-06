@@ -132,7 +132,7 @@ class EUIPN():
         print('Login / authentication')
 
         url = f'{self.url}ms-cgateway/login?'
-        parameters = {'service': 'https://www.tmdn.org/network/my-network',
+        parameters = {'service': 'https://www.tmdn.org/tmview/api/users/login/ds/cas',
                       'username': EUIPN._base64_encoder(username),                                                                                      # to make the authentication the username and the password should be in base64
                       'password': EUIPN._base64_encoder(password)}
 
