@@ -1,9 +1,9 @@
 import os
 from yattag import Doc
 from yattag import indent
+import locale
+from dateutil.parser import parse
 
-MONTHS = {'01':'January', '02': 'February', '03': 'March', '04': 'April', '05': 'May', '06': 'June', '07': 'July', '08': 'August', '09': 'September',
-          '10': 'October', '11': 'November', '12': 'December'}
 
 def get_text_list(file_path):
     with open(file_path, 'r') as f:
@@ -91,8 +91,7 @@ def date_mask(date):
     Returns:
         str: The date in the format Month dd, YYYY
     """
-    date = date.split('-')
-    return  f'{MONTHS[date[1]]} {date[2]}, {date[0]}'
+    return  parse(date).date().strftime("%B %d, %Y")
 
 
 def photo_labels(filename):
@@ -131,36 +130,42 @@ def create_photoframe(doc, tag, text, photo_path, filename):
             text(date.replace('-', '/'))
 
 
-path = f'{os.getcwd()}'
-path_images = 'images'
-path_photos = 'photos'
+def main():
+    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')                                                                                                      # set the language to the date to be displayed
 
-about = get_text_list(f'{path}\data\\about.txt')
+    path = f'{os.getcwd()}'
+    path_images = 'images'
+    path_photos = 'photos'
 
-doc, tag, text = Doc().tagtext()
-doc.asis('<!DOCTYPE html>')
-create_head(doc, tag, text)
+    about = get_text_list(f'{path}\data\\about.txt')
 
-nav_anchor = {'About': '#'}                                                                                                                             # About sectin has no folder directory
-nav_anchor.update({folder.capitalize(): f'#{folder.capitalize()}' for folder in os.listdir(f'{path}\photos')})                                          # add the other sections acording to the folder source name
+    doc, tag, text = Doc().tagtext()
+    doc.asis('<!DOCTYPE html>')
+    create_head(doc, tag, text)
 
-with tag('html'):
-    with tag('body'):
-        create_menu(tag, text, nav_anchor)
-        for title in nav_anchor:
-            with tag('div', id=title):                                                                                                                  # the anchor to the section will refer to the div that contain the section
-                create_title(doc, tag, text, title, path_images)
+    nav_anchor = {'About': '#'}                                                                                                                             # About sectin has no folder directory
+    nav_anchor.update({folder.capitalize(): f'#{folder.capitalize()}' for folder in os.listdir(f'{path}\photos')})                                          # add the other sections acording to the folder source name
 
-                if title == 'About':
-                    write_about(doc, tag, text, about, path_images)                                                                                     # about section just containg the text
-                    continue
+    with tag('html'):
+        with tag('body'):
+            create_menu(tag, text, nav_anchor)
+            for title in nav_anchor:
+                with tag('div', id=title):                                                                                                                  # the anchor to the section will refer to the div that contain the section
+                    create_title(doc, tag, text, title, path_images)
 
-                with tag('section', klass='columns'):
-                    path_photo = f'{path_photos}\{title.lower()}'                                                                                               # add the current section to the path
-                    for filename in os.listdir(path_photo):
-                        create_photoframe(doc, tag, text, path_photo, filename)
+                    if title == 'About':
+                        write_about(doc, tag, text, about, path_images)                                                                                     # about section just containg the text
+                        continue
+
+                    with tag('section', klass='columns'):
+                        path_photo = f'{path_photos}\{title.lower()}'                                                                                               # add the current section to the path
+                        for filename in os.listdir(path_photo):
+                            create_photoframe(doc, tag, text, path_photo, filename)
 
 
-with open('index.html','w',encoding='utf8') as f:
-    f.write(indent(doc.getvalue()))                                                                                                                     # add the in indentation to writes the html file
-    f.close()
+    with open('index.html','w',encoding='utf8') as f:
+        f.write(indent(doc.getvalue()))                                                                                                                     # add the in indentation to writes the html file
+        f.close()
+
+if __name__ == "__main__":
+    main()
